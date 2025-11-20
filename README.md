@@ -12,10 +12,15 @@ Sistema completo de gerenciamento de biblioteca desenvolvido com HTML, CSS, Java
 
 ## Funcionalidades
 
-### Autenticação
+### Autenticação e Controle de Acesso
 - Login com email e senha criptografada (bcrypt)
 - Sistema de sessões
 - Proteção de rotas (apenas usuários autenticados)
+- Sistema de permissões (usuários admin e usuários comuns)
+- Apenas administradores podem:
+  - Cadastrar, editar e excluir livros
+  - Devolver livros (encerrar empréstimos)
+  - Excluir registros de empréstimos
 
 ### CRUD de Livros
 - Cadastrar novos livros
@@ -48,6 +53,7 @@ Sistema completo de gerenciamento de biblioteca desenvolvido com HTML, CSS, Java
 - nome
 - email (UNIQUE)
 - senha (criptografada)
+- admin (BOOLEAN, padrão FALSE)
 - data_cadastro
 
 ### Tabela: livros
@@ -95,9 +101,15 @@ docker-compose up -d --build
 
 ### Credenciais de Acesso
 
-**Usuário de Teste:**
+**Usuário Administrador:**
 - Email: `admin@biblioteca.com`
 - Senha: `password`
+- Permissões: Gerenciar livros e empréstimos
+
+**Usuários Comuns:**
+- Email: `joao@email.com` ou `maria@email.com`
+- Senha: `password`
+- Permissões: Apenas realizar empréstimos e visualizar dados
 
 **Banco de Dados (phpMyAdmin):**
 - Usuário: `biblioteca_user`
@@ -152,9 +164,9 @@ projeto02/
 O sistema já vem com dados pré-cadastrados:
 
 **Usuários:**
-- Admin (admin@biblioteca.com)
-- João Silva (joao@email.com)
-- Maria Santos (maria@email.com)
+- Admin (admin@biblioteca.com) - Administrador com todas as permissões
+- João Silva (joao@email.com) - Usuário comum
+- Maria Santos (maria@email.com) - Usuário comum
 
 Senha para todos: `password`
 
@@ -176,6 +188,8 @@ Senha para todos: `password`
 - Proteção XSS com htmlspecialchars
 - Transações SQL para integridade de dados
 - Validação de formulários (client e server-side)
+- Sistema de permissões por função (admin/usuário comum)
+- Controle de acesso a operações críticas (CRUD de livros)
 
 ## Funcionalidades Extras
 

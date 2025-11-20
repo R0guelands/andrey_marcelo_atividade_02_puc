@@ -43,6 +43,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tipoMensagem = 'danger';
         }
     } elseif ($action === 'devolver') {
+        if (!$usuario['admin']) {
+            http_response_code(403);
+            die('Acesso negado. Apenas administradores podem encerrar empréstimos.');
+        }
+
         $pdo->beginTransaction();
         try {
             $stmt = $pdo->prepare("UPDATE emprestimos SET status = 'devolvido', data_devolucao_real = CURDATE() WHERE id = ?");
@@ -205,15 +210,19 @@ $livrosDisponiveis = $pdo->query("SELECT * FROM livros WHERE quantidade_disponiv
                                         </span>
                                     </td>
                                     <td class="action-buttons">
-                                        <?php if ($emp['status'] === 'ativo'): ?>
-                                            <form method="POST" style="display:inline;">
-                                                <input type="hidden" name="action" value="devolver">
-                                                <input type="hidden" name="id" value="<?php echo $emp['id']; ?>">
-                                                <button type="submit" class="btn btn-sm btn-success">Devolver</button>
-                                            </form>
+                                        <?php if ($usuario['admin']): ?>
+                                            <?php if ($emp['status'] === 'ativo'): ?>
+                                                <form method="POST" style="display:inline;">
+                                                    <input type="hidden" name="action" value="devolver">
+                                                    <input type="hidden" name="id" value="<?php echo $emp['id']; ?>">
+                                                    <button type="submit" class="btn btn-sm btn-success">Devolver</button>
+                                                </form>
+                                            <?php endif; ?>
+                                            <button onclick="confirmarExclusao('emprestimos', <?php echo $emp['id']; ?>)"
+                                                    class="btn btn-sm btn-danger">Excluir</button>
+                                        <?php else: ?>
+                                            <span class="text-muted">-</span>
                                         <?php endif; ?>
-                                        <button onclick="confirmarExclusao('emprestimos', <?php echo $emp['id']; ?>)"
-                                                class="btn btn-sm btn-danger">Excluir</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

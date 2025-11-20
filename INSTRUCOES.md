@@ -19,17 +19,20 @@ Seu sistema está pronto e rodando! Aqui estão as informações de acesso:
 
 A aplicação já vem com usuários pré-cadastrados para teste:
 
-**Usuário 1 (Admin):**
+**Usuário 1 (Administrador):**
 - Email: `admin@biblioteca.com`
 - Senha: `password`
+- Permissões: Pode cadastrar/editar/excluir livros e gerenciar empréstimos
 
-**Usuário 2 (João):**
+**Usuário 2 (João - Usuário Comum):**
 - Email: `joao@email.com`
 - Senha: `password`
+- Permissões: Pode apenas realizar empréstimos e visualizar informações
 
-**Usuário 3 (Maria):**
+**Usuário 3 (Maria - Usuário Comum):**
 - Email: `maria@email.com`
 - Senha: `password`
+- Permissões: Pode apenas realizar empréstimos e visualizar informações
 
 ## Comandos Docker
 
@@ -115,6 +118,8 @@ docker exec -it biblioteca_db mysql -ubiblioteca_user -pbiblioteca_pass bibliote
 - ✅ Senhas criptografadas (bcrypt)
 - ✅ Proteção contra SQL Injection (PDO)
 - ✅ Proteção contra XSS (htmlspecialchars)
+- ✅ Sistema de permissões (admin/usuário comum)
+- ✅ Controle de acesso a operações críticas
 
 **Extras:**
 - ✅ Interface responsiva (Bootstrap 5)
@@ -131,20 +136,27 @@ docker exec -it biblioteca_db mysql -ubiblioteca_user -pbiblioteca_pass bibliote
 2. Use: `admin@biblioteca.com` / `password`
 3. Você será redirecionado para o Dashboard
 
-### 2. Testar CRUD de Livros
-1. No menu, clique em "Livros"
-2. Clique em "+ Novo Livro"
-3. Preencha os dados e clique em "Salvar"
-4. Para editar: clique em "Editar" em qualquer livro
-5. Para excluir: clique em "Excluir" (não funcionará se houver empréstimos ativos)
+### 2. Testar CRUD de Livros (Apenas Administrador)
+1. Faça login como admin@biblioteca.com
+2. No menu, clique em "Livros"
+3. Clique em "+ Novo Livro"
+4. Preencha os dados e clique em "Salvar"
+5. Para editar: clique em "Editar" em qualquer livro
+6. Para excluir: clique em "Excluir" (não funcionará se houver empréstimos ativos)
+
+**Nota:** Usuários comuns podem visualizar livros mas não podem gerenciá-los
 
 ### 3. Testar CRUD de Empréstimos
+**Realizar Empréstimo (Todos os usuários):**
 1. No menu, clique em "Empréstimos"
 2. Clique em "+ Novo Empréstimo"
 3. Selecione um livro disponível
 4. Clique em "Realizar Empréstimo"
-5. Para devolver: clique em "Devolver"
-6. Para excluir: clique em "Excluir"
+
+**Devolver/Excluir (Apenas Administrador):**
+1. Faça login como admin@biblioteca.com
+2. Para devolver: clique em "Devolver"
+3. Para excluir: clique em "Excluir"
 
 ### 4. Verificar Banco de Dados
 1. Acesse http://localhost:8081 (phpMyAdmin)
@@ -226,12 +238,29 @@ docker exec -i biblioteca_db mysql -uroot -proot_password biblioteca_db < init.s
 - As senhas são criptografadas com `bcrypt` (hash: `$2y$10$...`)
 - O banco de dados persiste mesmo após reiniciar containers (volume Docker)
 
+## Sistema de Permissões
+
+O sistema implementa dois níveis de acesso:
+
+**Administrador:**
+- Visualizar todos os dados
+- Cadastrar, editar e excluir livros
+- Realizar empréstimos
+- Devolver livros (encerrar empréstimos)
+- Excluir registros de empréstimos
+
+**Usuário Comum:**
+- Visualizar livros e empréstimos
+- Realizar empréstimos apenas
+- Não pode gerenciar livros
+- Não pode devolver ou excluir empréstimos
+
 ## Próximos Passos (Opcional)
 
 Se quiser expandir o projeto:
 
 1. Adicionar página de cadastro de novos usuários
-2. Implementar perfis de usuário (admin, bibliotecário, leitor)
+2. Implementar mais perfis de usuário (bibliotecário, leitor)
 3. Adicionar sistema de multas por atraso
 4. Criar relatórios em PDF
 5. Implementar sistema de reservas

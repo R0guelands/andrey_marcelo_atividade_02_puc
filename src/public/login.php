@@ -55,6 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </form>
 
                     <div class="mt-3 text-center">
+                        <a href="/public/register.php" class="text-decoration-none">
+                            Não tem uma conta? Cadastre-se
+                        </a>
+                    </div>
+
+                    <div class="mt-2 text-center">
                         <small class="text-muted">
                             Usuário teste: admin@biblioteca.com<br>
                             Senha: password

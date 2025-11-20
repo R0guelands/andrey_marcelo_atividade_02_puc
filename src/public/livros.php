@@ -8,6 +8,11 @@ $mensagem = '';
 $tipoMensagem = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!$usuario['admin']) {
+        http_response_code(403);
+        die('Acesso negado. Apenas administradores podem gerenciar livros.');
+    }
+
     $action = $_POST['action'] ?? '';
 
     if ($action === 'create') {
@@ -39,6 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
+    if (!$usuario['admin']) {
+        http_response_code(403);
+        die('Acesso negado. Apenas administradores podem gerenciar livros.');
+    }
+
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM emprestimos WHERE livro_id = ? AND status = 'ativo'");
     $stmt->execute([$_GET['id']]);
     if ($stmt->fetchColumn() > 0) {
@@ -100,9 +110,11 @@ if (isset($_GET['edit'])) {
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Gerenciar Livros</h2>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalLivro">
-                + Novo Livro
-            </button>
+            <?php if ($usuario['admin']): ?>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalLivro">
+                    + Novo Livro
+                </button>
+            <?php endif; ?>
         </div>
 
         <?php if ($mensagem): ?>
@@ -155,9 +167,13 @@ if (isset($_GET['edit'])) {
                                         </span>
                                     </td>
                                     <td class="action-buttons">
-                                        <a href="?edit=<?php echo $livro['id']; ?>" class="btn btn-sm btn-warning">Editar</a>
-                                        <button onclick="confirmarExclusao('livros', <?php echo $livro['id']; ?>)"
-                                                class="btn btn-sm btn-danger">Excluir</button>
+                                        <?php if ($usuario['admin']): ?>
+                                            <a href="?edit=<?php echo $livro['id']; ?>" class="btn btn-sm btn-warning">Editar</a>
+                                            <button onclick="confirmarExclusao('livros', <?php echo $livro['id']; ?>)"
+                                                    class="btn btn-sm btn-danger">Excluir</button>
+                                        <?php else: ?>
+                                            <span class="text-muted">-</span>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
