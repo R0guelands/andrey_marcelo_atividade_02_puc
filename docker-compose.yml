@@ -1,0 +1,44 @@
+services:
+  web:
+    build: .
+    container_name: biblioteca_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=biblioteca_user
+      - DB_PASS=biblioteca_pass
+      - DB_NAME=biblioteca_db
+
+  db:
+    image: mysql:8.0
+    container_name: biblioteca_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: biblioteca_db
+      MYSQL_USER: biblioteca_user
+      MYSQL_PASSWORD: biblioteca_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: biblioteca_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: biblioteca_user
+      PMA_PASSWORD: biblioteca_pass
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:
